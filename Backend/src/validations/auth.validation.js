@@ -9,11 +9,28 @@ const registerSchema = z.object({
 });
 
 const loginSchema = z.object({
-  email: z.email(),
+  email: z.string().email(),
   password: z.string().min(6)
 });
+const resendOTPSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email"),
+});
+
+
+const verifyEmailSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email"),
+
+  otp: z
+    .string()
+    .regex(/^\d{6}$/, "OTP must be 6 digits"),
+});
+
 
 module.exports = {
-  registerSchema,
-  loginSchema
+  registerSchema,verifyEmailSchema,
+  loginSchema,resendOTPSchema
 };

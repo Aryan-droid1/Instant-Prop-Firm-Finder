@@ -12,7 +12,7 @@ export const Route = createFileRoute("/register")({
 });
 
 function RegisterPage() {
-  const { register, login } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -20,27 +20,47 @@ function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const errs: Record<string, string> = {};
-    if (form.username.length < 3) errs.username = "Min 3 characters";
-    if (!form.email.includes("@")) errs.email = "Valid email required";
-    if (form.password.length < 6) errs.password = "Min 6 characters";
+
+    if (form.username.length < 3) {
+      errs.username = "Min 3 characters";
+    }
+
+    if (!form.email.includes("@")) {
+      errs.email = "Valid email required";
+    }
+
+    if (form.password.length < 6) {
+      errs.password = "Min 6 characters";
+    }
+
     setErrors(errs);
-    if (Object.keys(errs).length) return;
+
+    if (Object.keys(errs).length) {
+      return;
+    }
 
     setLoading(true);
+
     try {
       await register(form);
-      // If register did not return token, attempt login
-      try {
-        await login({ email: form.email, password: form.password });
-      } catch {
-        // ignore
-      }
-      toast.success("Account created!");
-      navigate({ to: "/dashboard" });
+
+      toast.success("Verification code sent to your email");
+
+      navigate({
+        to: "/verify-email",
+        search: {
+          email: form.email,
+        },
+      });
     } catch (err: any) {
       const apiErrors = err?.response?.data?.errors;
-      if (apiErrors && typeof apiErrors === "object") setErrors(apiErrors);
+
+      if (apiErrors && typeof apiErrors === "object") {
+        setErrors(apiErrors);
+      }
+
       toast.error(err?.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);

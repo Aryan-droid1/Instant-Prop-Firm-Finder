@@ -1,7 +1,13 @@
 import * as React from "react";
 import { createContext, useContext, useState, useCallback } from "react";
 
-import { authService, type LoginPayload, type RegisterPayload } from "@/services/auth.service";
+import {
+  authService,
+  type LoginPayload,
+  type RegisterPayload,
+  type VerifyEmailPayload,
+  type ResendOTPPayload,
+} from "@/services/auth.service";
 
 export interface AuthUser {
   id: string;
@@ -15,8 +21,15 @@ interface AuthContextValue {
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
+
   login: (payload: LoginPayload) => Promise<void>;
+
   register: (payload: RegisterPayload) => Promise<void>;
+
+  verifyEmail: (payload: VerifyEmailPayload) => Promise<void>;
+
+  resendOTP: (payload: ResendOTPPayload) => Promise<void>;
+
   logout: () => void;
 }
 
@@ -24,6 +37,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
+
   const [loading] = useState(false);
 
   const login = useCallback(async (payload: LoginPayload) => {
@@ -36,6 +50,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await authService.register(payload);
   }, []);
 
+  const verifyEmail = useCallback(async (payload: VerifyEmailPayload) => {
+    await authService.verifyEmail(payload);
+  }, []);
+
+  const resendOTP = useCallback(async (payload: ResendOTPPayload) => {
+    await authService.resendOTP(payload);
+  }, []);
+
   const logout = useCallback(() => {
     setUser(null);
   }, []);
@@ -45,8 +67,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
+
     login,
     register,
+    verifyEmail,
+    resendOTP,
+
     logout,
   };
 
