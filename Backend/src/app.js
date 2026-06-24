@@ -11,9 +11,12 @@ const app = express();
 
 
 app.use(cors({
-  origin: "http://localhost:8081",
+  origin: [
+    "http://localhost:8081",
+    "https://instant-prop-firm-finder-production.up.railway.app"
+  ],
   credentials: true
-}))
+}));
 app.use(express.json());
 app.use(cookieParser());
 
