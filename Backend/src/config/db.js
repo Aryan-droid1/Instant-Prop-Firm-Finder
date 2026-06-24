@@ -5,8 +5,9 @@ async function connectDB(){
     await mongoose.connect(process.env.MONGO_URI)
     console.log("Database is connected ")
   }
-  catch(err){
-    console.log("Database connection error:", error);
+  catch(error){
+    console.log("Database connection error:", error.message);
+     process.exit(1);
   }
 }
 
